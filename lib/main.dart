@@ -61,11 +61,19 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Map<String, Object> getCreationParams() {
+    var map = Map<String, Object>();
+    map["path"] = pdfPath;
+
+    return map;
+  }
+
   @override
   Widget build(BuildContext context) {
+    var creationParams = getCreationParams();
     return Scaffold(
       appBar: AppBar(
-        title: Text("Fluff fluff"),
+        title: Text("Fluff Fluff"),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -84,7 +92,11 @@ class _MyHomePageState extends State<MyHomePage> {
           //             height: 200,
           //           )),
           Expanded(
-            child: UiKitView(viewType: "PdfView"),
+            child: (pdfPath != "") ? UiKitView(
+              viewType: "PdfView",
+              creationParams: creationParams,
+              creationParamsCodec: StandardMessageCodec(),
+            ) : Text("Loading..."),
           ),
         ],
       ),

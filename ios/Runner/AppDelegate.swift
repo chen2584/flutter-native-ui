@@ -1,6 +1,7 @@
 import UIKit
 import Flutter
 import WebKit
+import PDFKit
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
@@ -30,24 +31,31 @@ public class QPdfViewFactory: NSObject, FlutterPlatformViewFactory {
         
         return QPdfView(frame, viewId: viewId, args: args)
     }
+
+    public func createArgsCodec() -> FlutterMessageCodec & NSObjectProtocol {
+        return FlutterStandardMessageCodec.sharedInstance()
+    }
 }
 
 public class QPdfView: NSObject, FlutterPlatformView {
     let frame: CGRect
     let viewId: Int64
+    let parameter: Dictionary<String, Any>
     
     init(_ frame: CGRect, viewId: Int64, args: Any?) {
         self.frame = frame
         self.viewId = viewId
+        self.parameter = args as! Dictionary<String, Any>
     }
     public func view() -> UIView {
-        let url = Bundle.main.url(forResource: "tesla", withExtension: "pdf")
-        guard let x = url else {
-            return UISlider(frame: frame)
-        }
-        let webView = WKWebView(frame:  frame)
-        let urlRequest = URLRequest(url: x)
-        webView.load(urlRequest)
-        return webView;
+//        let url = URL(string: "http://www.africau.edu/images/default/sample.pdf")
+        let fileUrl = parameter["path"] as! String
+        let url = URL(fileURLWithPath: fileUrl)
+        let pdfView = PDFView()
+        let document = PDFDocument(url: url)
+        pdfView.document = document
+
+        pdfView.translatesAutoresizingMaskIntoConstraints = false
+        return pdfView
     }
 }
